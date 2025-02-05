@@ -42,6 +42,7 @@ RSpec.describe TaxCalculator do
       expect(result.type).to eq('export')
     end
   end
+
   describe 'digital services' do
     it 'applies Spanish VAT for digital service in Spain' do
       transaction = Transaction.new(
@@ -75,6 +76,31 @@ RSpec.describe TaxCalculator do
       result = calculator.calculate_tax(transaction)
       expect(result.amount).to eq(0)
       expect(result.type).to eq('reverse_charge')
+    end
+    
+    it 'applies no tax for non-EU buyers' do
+      transaction = Transaction.new(
+        types: ['service', 'digital'],
+        amount: 100,
+        buyer_country: 'US'
+      )
+      result = calculator.calculate_tax(transaction)
+      expect(result.amount).to eq(0)
+      expect(result.type).to eq('no_tax')
+    end
+  end
+
+  describe 'onsite services' do
+    it 'applies Spanish VAT for onsite service in Spain' do
+      transaction = Transaction.new(
+        types: ['service', 'onsite'],
+        amount: 100,
+        buyer_country: 'FR',
+        service_location: 'ES'
+      )
+      result = calculator.calculate_tax(transaction)
+      expect(result.amount).to eq(21)
+      expect(result.type).to eq('vat')
     end
   end
 end

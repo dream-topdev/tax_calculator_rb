@@ -29,6 +29,11 @@ class TaxCalculator
   end
 
   def calculate_onsite_service_tax(transaction)
+    if transaction.service_location == Config::BASE_COUNTRY
+      return apply_base_country_vat(transaction)
+    else
+      return TaxResult.new(amount: 0, type: Config::TAX_TYPES[:NO_TAX])
+    end
   end
 
   def apply_base_country_vat(transaction)
