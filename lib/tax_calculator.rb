@@ -19,6 +19,13 @@ class TaxCalculator
   end
 
   def calculate_digital_service_tax(transaction)
+    if transaction.buyer_country == Config::BASE_COUNTRY
+      return apply_base_country_vat(transaction)
+    elsif eu_country?(transaction.buyer_country)
+      return handle_eu_transaction(transaction)
+    else
+      return TaxResult.new(amount: 0, type: Config::TAX_TYPES[:NO_TAX])
+    end
   end
 
   def calculate_onsite_service_tax(transaction)
