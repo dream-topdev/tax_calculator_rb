@@ -77,7 +77,7 @@ RSpec.describe TaxCalculator do
       expect(result.amount).to eq(0)
       expect(result.type).to eq('reverse_charge')
     end
-    
+
     it 'applies no tax for non-EU buyers' do
       transaction = Transaction.new(
         types: ['service', 'digital'],
@@ -103,4 +103,46 @@ RSpec.describe TaxCalculator do
       expect(result.type).to eq('vat')
     end
   end
-end
+
+  describe 'validation and error handling' do
+    it 'raises error for invalid amount' do
+      expect {
+        Transaction.new(
+          types: ['good'],
+          amount: -100,
+          buyer_country: 'ES'
+        )
+      }.to raise_error(Errors::InvalidAmountError)
+    end
+
+    it 'raises error for invalid country code' do
+      expect {
+        Transaction.new(
+          types: ['good'],
+          amount: 100,
+          buyer_country: 'ESP'
+        )
+      }.to raise_error(Errors::InvalidCountryError)
+    end
+
+    it 'raises error for invalid type combination' do
+      expect {
+        Transaction.new(
+          types: ['good', 'digital'],
+          amount: 100,
+          buyer_country: 'ES'
+        )
+      }.to raise_error(ArgumentError)
+    end
+
+    it 'raises error for digital service without service type' do
+      expect {
+        Transaction.new(
+          types: ['digital'],
+          amount: 100,
+          buyer_country: 'ES'
+        )
+      }.to raise_error(ArgumentError)
+    end
+  end
+end 
