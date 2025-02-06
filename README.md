@@ -18,11 +18,5 @@ transaction = TaxCalculator::Transaction.new(
   buyer_country: 'ES'
 )
 
-tax = transaction.calculate_tax
-```
-
-## Development
-```bash
-bundle install
-rspec
+tax = transaction.calculate_tax(transaction)
 ```
