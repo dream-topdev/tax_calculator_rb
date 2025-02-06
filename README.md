@@ -13,7 +13,7 @@ Ruby library for international VAT and sales tax calculations.
 require 'tax_calculator'
 
 transaction = TaxCalculator::Transaction.new(
-  types: ['good', 'onsite'],
+  types: ['service', 'onsite'],
   amount: 100,
   buyer_country: 'ES'
 )
